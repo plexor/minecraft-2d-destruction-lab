@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://main"]
+
+[ext_resource type="Script" path="res://scripts/voxel_world.gd" id="1_wld"]
+[ext_resource type="Script" path="res://scripts/explosion_system.gd" id="2_exp"]
+
+[node name="Main" type="Node2D"]
+
+[node name="VoxelWorld" type="Node2D" parent="."]
+script = ExtResource("1_wld")
+
+[node name="ExplosionSystem" type="Node2D" parent="."]
+script = ExtResource("2_exp")
+world_path = NodePath("../VoxelWorld")

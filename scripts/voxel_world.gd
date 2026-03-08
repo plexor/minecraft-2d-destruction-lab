@@ -1,11 +1,6 @@
 extends Node2D
 class_name VoxelWorld
 
-const VoxelChunk = preload("res://scripts/voxel_chunk.gd")
-const VoxelBlock = preload("res://scripts/voxel_block.gd")
-const PhysicsDebris = preload("res://scripts/physics_debris.gd")
-const CityGenerator = preload("res://scripts/city_generator.gd")
-
 @export var block_size := 32
 @export var chunk_size := 16
 @export var world_width_chunks := 8
@@ -59,13 +54,13 @@ func _generate_terrain() -> void:
 			set_block(Vector2i(x, y), block, false)
 
 func global_to_grid(world_pos: Vector2) -> Vector2i:
-	return Vector2i(floor(world_pos.x / block_size), floor(world_pos.y / block_size))
+	return Vector2i(floori(world_pos.x / block_size), floori(world_pos.y / block_size))
 
 func grid_to_global(grid: Vector2i) -> Vector2:
 	return Vector2((grid.x + 0.5) * block_size, (grid.y + 0.5) * block_size)
 
 func get_block(grid: Vector2i) -> int:
-	var chunk_coord := Vector2i(grid.x / chunk_size, grid.y / chunk_size)
+	var chunk_coord := Vector2i(floori(float(grid.x) / chunk_size), floori(float(grid.y) / chunk_size))
 	var local := Vector2i(posmod(grid.x, chunk_size), posmod(grid.y, chunk_size))
 	var chunk: VoxelChunk = chunks.get(chunk_coord)
 	if chunk == null:
@@ -76,7 +71,7 @@ func set_block(grid: Vector2i, block_type: int, redraw := true) -> void:
 	if grid.x < 0 or grid.y < 0 or grid.x >= world_size_blocks.x or grid.y >= world_size_blocks.y:
 		return
 
-	var chunk_coord := Vector2i(grid.x / chunk_size, grid.y / chunk_size)
+	var chunk_coord := Vector2i(floori(float(grid.x) / chunk_size), floori(float(grid.y) / chunk_size))
 	var local := Vector2i(posmod(grid.x, chunk_size), posmod(grid.y, chunk_size))
 	var chunk: VoxelChunk = chunks.get(chunk_coord)
 	if chunk == null:

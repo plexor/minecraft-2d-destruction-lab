@@ -1,8 +1,6 @@
 extends RefCounted
 class_name CityGenerator
 
-const VoxelBlock = preload("res://scripts/voxel_block.gd")
-
 var rng := RandomNumberGenerator.new()
 
 func generate(world: Node, world_size: Vector2i, ground_line: int) -> void:

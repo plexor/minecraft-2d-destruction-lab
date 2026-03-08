@@ -25,13 +25,14 @@ func _build_road_columns(width: int) -> Dictionary:
 	return roads
 
 func _build_tower(world: Node, plot_x: int, world_width: int, ground_line: int, floors: int) -> void:
-	var tower_width := rng.randi_range(2, 4)
-	var tower_end := min(plot_x + tower_width, world_width)
+	var tower_width: int = rng.randi_range(2, 4)
+	var tower_end: int = mini(plot_x + tower_width, world_width)
+	var roof_y: int = ground_line - floors * 2
 
 	for x in range(plot_x, tower_end):
-		for y in range(ground_line - floors * 2, ground_line):
+		for y in range(roof_y, ground_line):
 			if y < 0:
 				continue
-			var edge := x == plot_x or x == tower_end - 1 or y == ground_line - floors * 2
+			var edge: bool = x == plot_x or x == tower_end - 1 or y == roof_y
 			var block_type: int = VoxelBlock.BlockType.BRICK if edge else VoxelBlock.BlockType.AIR
 			world.set_block(Vector2i(x, y), block_type, false)

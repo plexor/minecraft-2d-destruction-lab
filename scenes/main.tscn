@@ -1,0 +1,76 @@
+[gd_scene load_steps=3 format=3 uid="uid://main"]
+
+[ext_resource type="Script" path="res://scripts/voxel_world.gd" id="1_wld"]
+[ext_resource type="Script" path="res://scripts/game_manager.gd" id="2_mgr"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("2_mgr")
+
+[node name="VoxelWorld" type="Node2D" parent="."]
+script = ExtResource("1_wld")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="HUD" type="MarginContainer" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+
+[node name="VBox" type="VBoxContainer" parent="UI/HUD"]
+
+[node name="ModeLabel" type="Label" parent="UI/HUD/VBox"]
+text = "Mode: MENU"
+
+[node name="TimerLabel" type="Label" parent="UI/HUD/VBox"]
+text = "Timer: --"
+
+[node name="ScoreLabel" type="Label" parent="UI/HUD/VBox"]
+text = "Score: 0"
+
+[node name="ToolLabel" type="Label" parent="UI/HUD/VBox"]
+text = "Tool: Demo TNT"
+
+[node name="HintLabel" type="Label" parent="UI/HUD/VBox"]
+text = "Choose mode to start"
+
+[node name="MenuPanel" type="PanelContainer" parent="UI"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -210.0
+offset_top = -140.0
+offset_right = 210.0
+offset_bottom = 140.0
+
+[node name="MenuVBox" type="VBoxContainer" parent="UI/MenuPanel"]
+
+[node name="Title" type="Label" parent="UI/MenuPanel/MenuVBox"]
+text = "Demolition Lab"
+horizontal_alignment = 1
+
+[node name="SubTitle" type="Label" parent="UI/MenuPanel/MenuVBox"]
+text = "Pick a mode"
+horizontal_alignment = 1
+
+[node name="CasualButton" type="Button" parent="UI/MenuPanel/MenuVBox"]
+text = "Casual Sandbox"
+
+[node name="ChallengeButton" type="Button" parent="UI/MenuPanel/MenuVBox"]
+text = "Challenge (120s)"
+
+[node name="ChaosButton" type="Button" parent="UI/MenuPanel/MenuVBox"]
+text = "Chaos (Meteors)"
+
+[node name="Footer" type="Label" parent="UI/MenuPanel/MenuVBox"]
+text = "1/2/3 tools • LMB explode • RMB place • R menu"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="UI/MenuPanel/MenuVBox/CasualButton" to="." method="_on_casual_pressed"]
+[connection signal="pressed" from="UI/MenuPanel/MenuVBox/ChallengeButton" to="." method="_on_challenge_pressed"]
+[connection signal="pressed" from="UI/MenuPanel/MenuVBox/ChaosButton" to="." method="_on_chaos_pressed"]

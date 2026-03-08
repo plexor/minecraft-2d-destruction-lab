@@ -1,6 +1,8 @@
 extends Node2D
 class_name VoxelWorld
 
+signal explosion_applied(blocks_removed: int)
+
 @export var block_size := 32
 @export var chunk_size := 16
 @export var world_width_chunks := 8
@@ -23,15 +25,14 @@ func _ready() -> void:
 	if auto_fit_world_to_view:
 		_fit_world_to_view()
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("place_block"):
-		set_block(global_to_grid(get_global_mouse_position()), VoxelBlock.BlockType.BRICK)
-	if event.is_action_pressed("reset_world"):
-		reset_world()
-		if auto_fit_world_to_view:
-			_fit_world_to_view()
-	if event.is_action_pressed("slow_motion"):
-		Engine.time_scale = 0.2 if Engine.time_scale > 0.2 else 1.0
+func configure_world(width_chunks: int, height_chunks: int, debris_cap: int) -> void:
+	world_width_chunks = width_chunks
+	world_height_chunks = height_chunks
+	max_debris_pieces = debris_cap
+	world_size_blocks = Vector2i(world_width_chunks * chunk_size, world_height_chunks * chunk_size)
+	reset_world()
+	if auto_fit_world_to_view:
+		_fit_world_to_view()
 
 func reset_world() -> void:
 	chunks.clear()
@@ -47,6 +48,13 @@ func reset_world() -> void:
 	city_generator.generate(self, world_size_blocks, int(world_size_blocks.y * 0.6))
 	queue_redraw()
 
+func get_solid_block_count() -> int:
+	var count := 0
+	for y in world_size_blocks.y:
+		for x in world_size_blocks.x:
+			if VoxelBlock.is_solid(get_block(Vector2i(x, y))):
+				count += 1
+	return count
 
 func _fit_world_to_view() -> void:
 	var viewport_size := get_viewport_rect().size
@@ -95,18 +103,22 @@ func set_block(grid: Vector2i, block_type: int, redraw := true) -> void:
 	if redraw:
 		queue_redraw()
 
-func apply_explosion(world_pos: Vector2, radius: int, force: float) -> void:
+func apply_explosion(world_pos: Vector2, radius: int, force: float) -> int:
 	var center := global_to_grid(world_pos)
+	var removed := 0
 	for y in range(center.y - radius, center.y + radius + 1):
 		for x in range(center.x - radius, center.x + radius + 1):
 			var p := Vector2i(x, y)
 			if p.distance_to(center) <= radius and VoxelBlock.is_solid(get_block(p)):
 				_spawn_debris(p, force, world_pos)
 				set_block(p, VoxelBlock.BlockType.AIR, false)
+				removed += 1
 
 	if collapse_disconnected:
 		collapse_floating_sections()
 	queue_redraw()
+	explosion_applied.emit(removed)
+	return removed
 
 func collapse_floating_sections() -> void:
 	var visited := {}

@@ -64,6 +64,7 @@ func _ready() -> void:
 	chaos_timer.timeout.connect(_on_chaos_tick)
 	add_child(chaos_timer)
 
+	_ensure_preview_world()
 	show_main_menu()
 
 func show_main_menu() -> void:
@@ -111,6 +112,7 @@ func start_mode(mode_name: String) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("reset_world"):
+		_ensure_preview_world()
 		show_main_menu()
 		return
 
@@ -190,3 +192,12 @@ func _on_challenge_pressed() -> void:
 
 func _on_chaos_pressed() -> void:
 	start_mode("Chaos")
+
+
+func _ensure_preview_world() -> void:
+	var casual: Dictionary = mode_defs.get("Casual", {})
+	if casual.is_empty():
+		return
+	var size: Vector2i = casual.get("size", Vector2i(8, 4))
+	var debris: int = int(casual.get("debris", 220))
+	world.configure_world(size.x, size.y, debris)

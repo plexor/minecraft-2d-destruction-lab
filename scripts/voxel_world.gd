@@ -107,11 +107,11 @@ func collapse_floating_sections() -> void:
 			q.append(p)
 			visited[p] = true
 
-	var directions := [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]
+	var directions: Array[Vector2i] = [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]
 	while not q.is_empty():
-		var current := q.pop_front()
+		var current: Vector2i = q.pop_front()
 		for dir in directions:
-			var n := current + dir
+			var n: Vector2i = current + dir
 			if visited.has(n):
 				continue
 			if not VoxelBlock.is_solid(get_block(n)):

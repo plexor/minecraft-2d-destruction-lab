@@ -23,7 +23,7 @@ func _ready() -> void:
 	add_child(debris_root)
 	reset_world()
 	if auto_fit_world_to_view:
-		call_deferred("_fit_world_to_view")
+		_fit_world_to_view()
 
 func configure_world(width_chunks: int, height_chunks: int, debris_cap: int) -> void:
 	world_width_chunks = width_chunks
@@ -32,12 +32,7 @@ func configure_world(width_chunks: int, height_chunks: int, debris_cap: int) -> 
 	world_size_blocks = Vector2i(world_width_chunks * chunk_size, world_height_chunks * chunk_size)
 	reset_world()
 	if auto_fit_world_to_view:
-		call_deferred("_fit_world_to_view")
-
-
-func _notification(what: int) -> void:
-	if what == NOTIFICATION_RESIZED and auto_fit_world_to_view and is_inside_tree():
-		call_deferred("_fit_world_to_view")
+		_fit_world_to_view()
 
 func reset_world() -> void:
 	chunks.clear()

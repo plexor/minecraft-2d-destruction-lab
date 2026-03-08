@@ -7,6 +7,7 @@ class_name VoxelWorld
 @export var world_height_chunks := 4
 @export var max_debris_pieces := 200
 @export var collapse_disconnected := true
+@export var auto_fit_world_to_view := true
 
 var world_size_blocks := Vector2i.ZERO
 var chunks := {}
@@ -19,12 +20,16 @@ func _ready() -> void:
 	debris_root.name = "Debris"
 	add_child(debris_root)
 	reset_world()
+	if auto_fit_world_to_view:
+		_fit_world_to_view()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("place_block"):
 		set_block(global_to_grid(get_global_mouse_position()), VoxelBlock.BlockType.BRICK)
 	if event.is_action_pressed("reset_world"):
 		reset_world()
+		if auto_fit_world_to_view:
+			_fit_world_to_view()
 	if event.is_action_pressed("slow_motion"):
 		Engine.time_scale = 0.2 if Engine.time_scale > 0.2 else 1.0
 
@@ -42,6 +47,14 @@ func reset_world() -> void:
 	city_generator.generate(self, world_size_blocks, int(world_size_blocks.y * 0.6))
 	queue_redraw()
 
+
+func _fit_world_to_view() -> void:
+	var viewport_size := get_viewport_rect().size
+	var ground_line := int(world_size_blocks.y * 0.6)
+	var world_ground_y := float(ground_line * block_size)
+	var desired_ground_y := viewport_size.y * 0.72
+	position = Vector2(0.0, desired_ground_y - world_ground_y)
+
 func _generate_terrain() -> void:
 	var ground_line := int(world_size_blocks.y * 0.6)
 	for y in world_size_blocks.y:
@@ -54,10 +67,12 @@ func _generate_terrain() -> void:
 			set_block(Vector2i(x, y), block, false)
 
 func global_to_grid(world_pos: Vector2) -> Vector2i:
-	return Vector2i(floori(world_pos.x / block_size), floori(world_pos.y / block_size))
+	var local_pos := to_local(world_pos)
+	return Vector2i(floori(local_pos.x / block_size), floori(local_pos.y / block_size))
 
 func grid_to_global(grid: Vector2i) -> Vector2:
-	return Vector2((grid.x + 0.5) * block_size, (grid.y + 0.5) * block_size)
+	var local_pos := Vector2((grid.x + 0.5) * block_size, (grid.y + 0.5) * block_size)
+	return to_global(local_pos)
 
 func get_block(grid: Vector2i) -> int:
 	var chunk_coord := Vector2i(floori(float(grid.x) / chunk_size), floori(float(grid.y) / chunk_size))
